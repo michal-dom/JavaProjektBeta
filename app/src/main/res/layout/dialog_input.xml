@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/your_dialog_root_element"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/first_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Loops number: "
+        android:textSize="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"/>
+
+    <SeekBar
+        android:id="@+id/quantity_seekbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/first_text"
+        android:layout_marginTop="8dp">
+    </SeekBar>
+    <TextView
+        android:id="@+id/second_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Loops interval: "
+        android:layout_below="@id/quantity_seekbar"
+        android:textSize="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"/>
+
+    <SeekBar
+        android:id="@+id/interval_seekbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/second_text"
+        android:layout_marginTop="8dp">
+    </SeekBar>
+    <TextView
+        android:id="@+id/third_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="First loop delay: "
+        android:textSize="24dp"
+        android:layout_below="@id/interval_seekbar"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"/>
+    <SeekBar
+        android:id="@+id/delay_seekbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/third_text"
+        android:layout_marginTop="8dp">
+    </SeekBar>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/delay_seekbar"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="24dp"
+        android:text="Set">
+    </Button>
+
+    <EditText
+        android:id="@+id/quantity_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="0"
+        android:textSize="24dp"
+        android:inputType="number"
+        android:layout_marginRight="24dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:id="@+id/interval_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="0"
+        android:textSize="24dp"
+        android:inputType="number"
+        android:layout_marginRight="24dp"
+        android:layout_below="@+id/quantity_seekbar"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <EditText
+        android:id="@+id/delay_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="0"
+        android:textSize="24dp"
+        android:inputType="number"
+        android:layout_marginRight="24dp"
+        android:layout_below="@+id/interval_seekbar"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>
