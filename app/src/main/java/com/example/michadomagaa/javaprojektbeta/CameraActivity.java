@@ -26,6 +26,7 @@ import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
@@ -47,9 +48,12 @@ import java.util.List;
 
 
 public class CameraActivity extends AppCompatActivity {
+
     private static final String TAG = "AndroidCameraApi";
     private TextView takePictureButton;
+    //TextureView jest rodzajem widoku w który można wsadzić Surface
     private TextureView textureView;
+    //SparseIntArray to struktura z dwoma polami - kluczem i wartoscią - oba int
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -58,10 +62,14 @@ public class CameraActivity extends AppCompatActivity {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
     private String cameraId;
+    //https://developer.android.com/reference/android/hardware/camera2/CameraDevice.html
     protected CameraDevice cameraDevice;
+    //https://developer.android.com/reference/android/hardware/camera2/CameraCaptureSession.html
     protected CameraCaptureSession cameraCaptureSessions;
     protected CaptureRequest captureRequest;
+    //https://developer.android.com/reference/android/hardware/camera2/CaptureRequest.Builder.html
     protected CaptureRequest.Builder captureRequestBuilder;
+
     private Size imageDimension;
     private ImageReader imageReader;
     private File file;
@@ -73,7 +81,7 @@ public class CameraActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {//ok
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
@@ -88,7 +96,10 @@ public class CameraActivity extends AppCompatActivity {
         });
     }
 
-    TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
+
+    //TextureView stworzone do obslugi streama z kamery (miedzy innymi)
+    //implementacja metody abstrakcyjnej
+    TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {//ok
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) { openCamera(); }
         @Override
@@ -99,7 +110,9 @@ public class CameraActivity extends AppCompatActivity {
         public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) { }
     };
 
-    private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
+    //stateCallback - obiekt obslugujacy zmiane stanu kamery
+    //https://developer.android.com/reference/android/hardware/camera2/CameraDevice.StateCallback.html
+    private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {//ok
         @Override
         public void onOpened(CameraDevice c) {
             Log.e("camera ","open");
@@ -127,12 +140,16 @@ public class CameraActivity extends AppCompatActivity {
     };
 
     protected void startBackgroundThread(){
+        // https://developer.android.com/reference/android/os/Handler.html
+        // https://developer.android.com/reference/android/os/HandlerThread.html
+        // https://developer.android.com/reference/java/lang/Thread.html
         mBackgroundThread = new HandlerThread("Camera Background");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
     }
 
     protected void stopBackgroundThread() {
+
         mBackgroundThread.quitSafely();
         try {
             mBackgroundThread.join();
@@ -238,12 +255,20 @@ public class CameraActivity extends AppCompatActivity {
     }
     protected void createCameraPreview() {
         try {
+            //SurfaceTexture - użyte zamiast SurfaceHolder
+            // https://developer.android.com/reference/android/view/SurfaceHolder.html
+            // https://developer.android.com/reference/android/graphics/SurfaceTexture.html
             SurfaceTexture texture = textureView.getSurfaceTexture();
-            assert texture != null;
+            assert texture != null;//assert wyrzuca wyjatek
             texture.setDefaultBufferSize(imageDimension.getWidth(), imageDimension.getHeight());
+            // surface to klasa impementujaca interfejs bedacy konsumentem,
+            //https://developer.android.com/reference/android/view/Surface.html
             Surface surface = new Surface(texture);
+            //https://developer.android.com/reference/android/hardware/camera2/CameraDevice.html#createCaptureRequest(int)
+            //https://developer.android.com/reference/android/hardware/camera2/CameraDevice.html#TEMPLATE_PREVIEW
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureRequestBuilder.addTarget(surface);
+            //https://developer.android.com/reference/android/hardware/camera2/CameraDevice.html#createCaptureSession(java.util.List<android.view.Surface>, android.hardware.camera2.CameraCaptureSession.StateCallback, android.os.Handler)
             cameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback(){
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
@@ -262,23 +287,36 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    private void openCamera() {
+    private void openCamera() {//odpowiada za połączenie z hardwerowa kamera
+        // CameraManager - systemowy serwis odpowiadajacy za wykrycie, scharakteryzowanie i polaczenie z CameraDevices.
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         Log.e(TAG, "is camera open");
+        //try catcha w szczegolnosci wymagaja:
+        //cameraId = manager.getCameraIdList()[0];
+        //manager.openCamera(cameraId, stateCallback, null);
         try {
-            cameraId = manager.getCameraIdList()[0];
+            cameraId = manager.getCameraIdList()[0];//getCameraIdList - zwaraca tablice stringow
+            for (int k = 0; k < manager.getCameraIdList().length; k++){
+                Log.e(TAG, manager.getCameraIdList()[k]);
+            }
+            //CameraCharacteristics - wszystkie informacje o danej kamerze
+            //StreamConfigurationMap mapa ktora zawiera dane w szczegolnosci o formatach wyjsciowych
+            //https://developer.android.com/reference/android/hardware/camera2/CameraCharacteristics.html#SCALER_STREAM_CONFIGURATION_MAP
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             assert map != null;
+            //lista Size'ów kompatybilnych z formatami zdjecia
             imageDimension = map.getOutputSizes(SurfaceTexture.class)[0];
-            // Add permission for camera and let user grant the permission
+            //sprawdzanie czy sa ustawione prawa w manifescie
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(CameraActivity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CAMERA_PERMISSION);
                 return;
             }
+            //manager.openCamera - tworzy polaczenie z kamera o podanym cameraId
+            //https://developer.android.com/reference/android/hardware/camera2/CameraManager.html#openCamera(java.lang.String, android.hardware.camera2.CameraDevice.StateCallback, android.os.Handler)
             manager.openCamera(cameraId, stateCallback, null);
         } catch (CameraAccessException e) {
-            e.printStackTrace();
+           e.printStackTrace();
         }
         Log.e(TAG, "openCamera X");
     }
@@ -302,6 +340,7 @@ public class CameraActivity extends AppCompatActivity {
             imageReader = null;
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
@@ -314,6 +353,7 @@ public class CameraActivity extends AppCompatActivity {
     }
     @Override
     protected void onResume() {
+        //wywołanie metody onResume
         super.onResume();
         Log.e(TAG, "onResume");
         startBackgroundThread();
@@ -328,6 +368,7 @@ public class CameraActivity extends AppCompatActivity {
         Log.e(TAG, "onPause");
         closeCamera();
         stopBackgroundThread();
+        //wywołanie metody onPause
         super.onPause();
     }
 

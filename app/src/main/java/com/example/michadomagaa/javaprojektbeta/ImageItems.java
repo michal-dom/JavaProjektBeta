@@ -10,11 +10,13 @@ public class ImageItems {
 
     private Bitmap image;
     private String title;
+    private long size;
 
-    public ImageItems(Bitmap image, String title){
+    public ImageItems(Bitmap image, String title, long size){
         super();
         this.image = image;
         this.title = title;
+        this.size = size;
     }
 
     public Bitmap getImage(){
@@ -31,5 +33,9 @@ public class ImageItems {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public long getSize() {
+        return size;
     }
 }
