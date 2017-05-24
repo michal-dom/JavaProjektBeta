@@ -93,7 +93,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         setMainImage(files[0].getName(),Imaging.decodeImage(f.getPath() + "/" + files[0].getName()), files[0].length());
         currentImage = files[0].getName();
-        for(int i = 1; i < files.length; i++){
+        for(int i = 0; i < files.length; i++){
             final String imagePath = f.getPath() + "/" + files[i].getName();
             Bitmap bitmap = Imaging.decodeImage(imagePath);
 
