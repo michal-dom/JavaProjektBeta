@@ -42,8 +42,6 @@ public class GalleryActivity extends AppCompatActivity {
         final int size = gridView.getChildCount();
         Log.e("size", size+"");
 
-
-
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int i, long l) {
