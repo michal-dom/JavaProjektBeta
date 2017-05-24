@@ -1,5 +1,5 @@
 package com.example.michadomagaa.javaprojektbeta;
-
+// BLAblaBLA
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Environment;
