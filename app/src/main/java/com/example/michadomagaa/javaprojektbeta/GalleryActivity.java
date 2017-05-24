@@ -28,17 +28,13 @@ public class GalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
-        /*
-        * gridView obiekt klasy GridView z biblioteki android.widget.GridView
-        * gridViewAdapter obiekt klasy GridViewAdapter stworzonej przeze mnie
-        * public abstract class ViewGroup extends View implements ViewParent, ViewManager
-        */
+
 
         gridView = (GridView) findViewById(R.id.grid_gallery);
         gridViewAdapter = new GridViewAdapter(this, R.layout.gallery_grid_item, getData());
 
         gridView.setAdapter(gridViewAdapter);
-
+        /*ghfhfghgfhfghgfhfghfg*/
         final int size = gridView.getChildCount();
         Log.e("size", size+"");
 
