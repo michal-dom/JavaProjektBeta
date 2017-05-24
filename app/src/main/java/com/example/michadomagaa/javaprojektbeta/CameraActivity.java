@@ -372,6 +372,4 @@ public class CameraActivity extends AppCompatActivity {
         super.onPause();
     }
 
-
-
 }
